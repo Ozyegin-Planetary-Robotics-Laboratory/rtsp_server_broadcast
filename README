@@ -1,0 +1,17 @@
+
+sudo nano /etc/udev/rules.d/99-webcam.rules
+
+add trigger:
+SUBSYSTEM=="video4linux", ACTION=="add", RUN+="/usr/local/bin/handle_camera.sh"
+
+create script:
+sudo nano /usr/local/bin/handle_camera.sh
+
+in this script:
+#!/bin/bash
+
+# This script is triggered by udev when a camera is connected.
+/usr/bin/python3 /path/to/your/rtsp_server.py --refresh
+
+make executable:
+sudo chmod +x /usr/local/bin/handle_camera.sh

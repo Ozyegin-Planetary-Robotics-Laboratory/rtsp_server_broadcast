@@ -154,9 +154,14 @@ class DynamicCameraRTSPServer:
 
     def add_camera_stream(self, name, device_path):
         factory = GstRtspServer.RTSPMediaFactory()
-        factory.set_launch(
-            f'( v4l2src device={device_path} ! videoconvert ! x264enc tune=zerolatency bitrate=1000 speed-preset=superfast ! h264parse ! rtph264pay config-interval=10 name=pay0 pt=96 )'
-        )
+        if "zed" in name.lower():
+            factory.set_launch(
+                f'( v4l2src device={device_path} ! videoconvert ! videocrop right=2208 ! videoconvert ! x264enc tune=zerolatency bitrate=1000 speed-preset=superfast ! h264parse ! rtph264pay config-interval=10 name=pay0 pt=96 )'
+            )
+        else:
+            factory.set_launch(
+                f'( v4l2src device={device_path} ! videoconvert ! x264enc tune=zerolatency bitrate=1000 speed-preset=superfast ! h264parse ! rtph264pay config-interval=10 name=pay0 pt=96 )'
+            )
         factory.set_shared(True)
         self.mounts.add_factory(f"/{name}", factory)
         print(f"Started streaming: rtsp://127.0.0.1:8554/{name}")
